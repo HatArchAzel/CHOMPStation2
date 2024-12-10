@@ -1,5 +1,6 @@
-import { Button } from 'tgui_ch/components'; // CHOMPEdit - tgui_ch
-import { useDispatch } from 'common/redux';
+import { useDispatch } from 'tgui/backend';
+import { Button } from 'tgui/components';
+
 import { dismissWarning } from './game/actions';
 
 let url: string | null = null;
@@ -13,33 +14,37 @@ setInterval(() => {
   });
 }, 5000);
 
-export const ReconnectButton = (props, context) => {
+export const ReconnectButton = (props) => {
   if (!url) {
     return null;
   }
-  const dispatch = useDispatch(context);
+  const dispatch = useDispatch();
   return (
     <>
       <Button
         color="white"
         onClick={() => {
           Byond.command('.reconnect');
-        }}>
+        }}
+      >
         Reconnect
       </Button>
       <Button
         color="white"
+        icon="power-off"
+        tooltip="Relaunch game"
+        tooltipPosition="bottom-end"
         onClick={() => {
           location.href = `byond://${url}`;
           Byond.command('.quit');
-        }}>
-        Relaunch game
-      </Button>
+        }}
+      />
       <Button
         color="white"
         onClick={() => {
           dispatch(dismissWarning());
-        }}>
+        }}
+      >
         Dismiss
       </Button>
     </>

@@ -27,6 +27,8 @@
 #define BORGTHERM 0x2
 #define BORGXRAY  0x4
 #define BORGMATERIAL  0x8
+#define BORGANOMALOUS  0x10
+#define BORGJAN  0x20
 
 #define STANCE_ATTACK    11 // Backwards compatability
 #define STANCE_ATTACKING 12 // Ditto
@@ -321,12 +323,12 @@
 #define SPECIES_VR_VOX			"Virtual Reality Vox"
 
 // Ayyy IDs.
-#define SPECIES_XENO				"Xenomorph"
-#define SPECIES_XENO_DRONE			"Xenomorph Drone"
-#define SPECIES_XENO_HUNTER			"Xenomorph Hunter"
-#define SPECIES_XENO_SENTINEL		"Xenomorph Sentinel"
-#define SPECIES_XENO_QUEEN			"Xenomorph Queen"
-#define SPECIES_XENOMORPH_HYBRID 	"Xenomorph Hybrid" // CHOMPedit: Playable Xeno species.
+#define SPECIES_XENO			"Xenomorph"
+#define SPECIES_XENO_DRONE		"Xenomorph Drone"
+#define SPECIES_XENO_HUNTER		"Xenomorph Hunter"
+#define SPECIES_XENO_SENTINEL	"Xenomorph Sentinel"
+#define SPECIES_XENO_QUEEN		"Xenomorph Queen"
+#define SPECIES_XENOMORPH_HYBRID 	"Xenomorph Hybrid"
 
 // Misc species. Mostly unused but might as well be complete.
 #define SPECIES_SHADOW			"Shadow"
@@ -340,6 +342,7 @@
 #define SPECIES_REPLICANT		"Replicant"
 #define SPECIES_REPLICANT_ALPHA	"Alpha Replicant"
 #define SPECIES_REPLICANT_BETA	"Beta Replicant"
+#define SPECIES_REPLICANT_CREW	"Gamma Replicant"
 
 // Used to seperate simple animals by ""intelligence"".
 #define SA_PLANT	1
@@ -401,18 +404,19 @@
 #define VIS_ADMIN3			20
 
 #define VIS_MESONS			21
+#define VIS_JANHUD			22
 
-#define VIS_TURFS			22
-#define VIS_OBJS			23
-#define VIS_MOBS		    24
+#define VIS_TURFS			23
+#define VIS_OBJS			24
+#define VIS_MOBS		    25
 
-#define VIS_BUILDMODE		25
+#define VIS_BUILDMODE		26
 
-#define VIS_CLOAKED			26
+#define VIS_CLOAKED			27
 
-#define VIS_STATUS			27
+#define VIS_STATUS			28
 
-#define VIS_COUNT			27 //Must be highest number from above.
+#define VIS_COUNT			28 //Must be highest number from above.
 
 //Some mob icon layering defines
 #define BODY_LAYER		-100
@@ -444,7 +448,7 @@
 
 #define MAX_NUTRITION	6000 //VOREStation Edit
 
-#define FAKE_INVIS_ALPHA_THRESHOLD 127 // If something's alpha var is at or below this number, certain things will pretend it is invisible.
+#define FAKE_INVIS_ALPHA_THRESHOLD 64 //CHOMPEdit. 25% down from 50% // If something's alpha var is at or below this number, certain things will pretend it is invisible.
 
 #define DEATHGASP_NO_MESSAGE "no message"
 
@@ -453,3 +457,6 @@
 #define VISIBLE_GENDER_FORCE_PLURAL 1		// Used by get_visible_gender to return PLURAL
 #define VISIBLE_GENDER_FORCE_IDENTIFYING 2	// Used by get_visible_gender to return the mob's identifying gender
 #define VISIBLE_GENDER_FORCE_BIOLOGICAL 3	// Used by get_visible_gender to return the mob's biological gender
+
+// Default name for accesories
+#define DEVELOPER_WARNING_NAME "you should not see this..."

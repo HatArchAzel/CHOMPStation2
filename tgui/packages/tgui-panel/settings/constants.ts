@@ -10,6 +10,10 @@ export const SETTINGS_TABS = [
     name: 'General',
   },
   {
+    id: 'adminSettings',
+    name: 'Admin',
+  },
+  {
     id: 'limits',
     name: 'Visual Limits',
   },
@@ -24,6 +28,10 @@ export const SETTINGS_TABS = [
   {
     id: 'chatPage',
     name: 'Chat Tabs',
+  },
+  {
+    id: 'statPanel',
+    name: 'Stat Panel',
   },
 ];
 

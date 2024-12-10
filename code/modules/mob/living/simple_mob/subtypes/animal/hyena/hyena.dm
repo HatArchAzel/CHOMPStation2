@@ -82,13 +82,15 @@ They're also cool, and Rykka/Nyria wrote this uwu
 
 	say_list_type = /datum/say_list/hyena
 
+	allow_mind_transfer = TRUE //CHOMPAdd
+
 	var/obj/item/clothing/head/hat = null // The hat the yeen is wearing when initialized, var will update with the chosen hat.
 
 // Silly stuff. HATS! Give your yeen a hat today <3
 /mob/living/simple_mob/animal/hyena/verb/remove_hat()
 	set name = "Remove Hat"
 	set desc = "Remove the yeen's hat. You monster. ;~;"
-	set category = "Abilities"
+	set category = "Abilities.Hyena" //CHOMPEdit
 	set src in view(1)
 
 	drop_hat(usr)
@@ -99,19 +101,19 @@ They're also cool, and Rykka/Nyria wrote this uwu
 		hat = null
 		update_icon()
 		if(user == src)
-			to_chat(user, "<span class='notice'>You removed your hat.</span>")
+			to_chat(user, span_notice("You removed your hat."))
 			return
-		to_chat(user, "<span class='warning'>You removed \the [src]'s hat. You monster. ;~;</span>")
+		to_chat(user, span_warning("You removed \the [src]'s hat. You monster. ;~;"))
 	else
 		if(user == src)
-			to_chat(user, "<span class='notice'>You are not wearing a hat!</span>")
+			to_chat(user, span_notice("You are not wearing a hat!"))
 			return
-		to_chat(user, "<span class='notice'>\The [src] is not wearing a hat!</span>")
+		to_chat(user, span_notice("\The [src] is not wearing a hat!"))
 
 /mob/living/simple_mob/animal/hyena/verb/give_hat()
 	set name = "Give Hat"
 	set desc = "Give the yeen a hat. You wonderful bean. <3"
-	set category = "Abilities"
+	set category = "Abilities.Hyena" //CHOMPEdit
 	set src in view(1)
 
 	take_hat(usr)
@@ -119,16 +121,16 @@ They're also cool, and Rykka/Nyria wrote this uwu
 /mob/living/simple_mob/animal/hyena/proc/take_hat(var/mob/user)
 	if(hat)
 		if(user == src)
-			to_chat(user, "<span class='notice'>You already have a hat!</span>")
+			to_chat(user, span_notice("You already have a hat!"))
 			return
-		to_chat(user, "<span class='notice'>\The [src] already has a hat!</span>")
+		to_chat(user, span_notice("\The [src] already has a hat!"))
 	else
 		if(user == src)
 			if(istype(get_active_hand(), /obj/item/clothing/head))
 				hat = get_active_hand()
 				drop_from_inventory(hat, src)
 				hat.forceMove(src)
-				to_chat(user, "<span class='notice'>You put on the hat.</span>")
+				to_chat(user, span_notice("You put on the hat."))
 				update_icon()
 			return
 		else if(ishuman(user))
@@ -141,10 +143,10 @@ They're also cool, and Rykka/Nyria wrote this uwu
 					a_intent = I_HELP
 					newhat.attack_hand(src)
 			else if(src.get_active_hand())
-				to_chat(user, "<span class='notice'>\The [src] seems busy with \the [get_active_hand()] already!</span>")
+				to_chat(user, span_notice("\The [src] seems busy with \the [get_active_hand()] already!"))
 
 			else
-				to_chat(user, "<span class='warning'>You aren't holding a hat...</span>")
+				to_chat(user, span_warning("You aren't holding a hat..."))
 
 /datum/say_list/hyena
 	speak = list("Huff.", "|R|rr?", "Yap.", "Grr.", "Yip.", "SCREM!")

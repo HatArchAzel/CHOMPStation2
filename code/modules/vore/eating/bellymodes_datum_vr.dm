@@ -30,7 +30,7 @@ GLOBAL_LIST_INIT(digest_modes, list())
 	//Person just died in guts!
 	if(L.stat == DEAD)
 		if(!L.digestion_in_progress) //CHOMPEdit Start
-			if(L.is_preference_enabled(/datum/client_preference/digestion_noises))
+			if(L.check_sound_preference(/datum/preference/toggle/digestion_noises))
 				if(!B.fancy_vore)
 					SEND_SOUND(L, sound(get_sfx("classic_death_sounds")))
 				else
@@ -75,7 +75,7 @@ GLOBAL_LIST_INIT(digest_modes, list())
 	L.adjustCloneLoss(B.digest_clone)
 	//CHOMPEdit start - Send a message when a prey-thing enters hard crit.
 	if(iscarbon(L) && old_health > 0 && L.health <= 0)
-		to_chat(B.owner, "<span class='notice'>You feel [L] go still within your [lowertext(B.name)].</span>")
+		to_chat(B.owner, span_notice("You feel [L] go still within your [lowertext(B.name)]."))
 	//CHOMPEdit end
 	var/actual_brute = L.getBruteLoss() - old_brute
 	var/actual_burn = L.getFireLoss() - old_burn
@@ -88,9 +88,10 @@ GLOBAL_LIST_INIT(digest_modes, list())
 	var/offset = (1 + ((L.weight - 137) / 137)) // 130 pounds = .95 140 pounds = 1.02
 	var/difference = B.owner.size_multiplier / L.size_multiplier
 
-	consider_healthbar(L, old_health, B.owner)
 	if(B.health_impacts_size) //CHOMPEdit - Health probably changed so...
 		B.owner.update_fullness() //CHOMPEdit - This is run whenever a belly's contents are changed.
+
+	consider_healthbar(L, old_health, B.owner)
 	/*if(isrobot(B.owner)) //CHOMPEdit: Borgos can now use nutrition too
 		if(B.reagent_mode_flags & DM_FLAG_REAGENTSDIGEST && B.reagents.total_volume < B.reagents.maximum_volume) //digestion producing reagents
 			var/mob/living/silicon/robot/R = B.owner
@@ -156,7 +157,7 @@ GLOBAL_LIST_INIT(digest_modes, list())
 	if(L.size_multiplier > B.shrink_grow_size)
 		L.resize(L.size_multiplier - 0.01) // Shrink by 1% per tick
 		if(L.size_multiplier <= B.shrink_grow_size) //CHOMPEdit - Adds some feedback so the pred knows their prey has stopped shrinking.
-			to_chat(B.owner, "<span class='notice'>You feel [L] get as small as you would like within your [lowertext(B.name)].</span>")
+			to_chat(B.owner, span_notice("You feel [L] get as small as you would like within your [lowertext(B.name)]."))
 		B.owner.update_fullness() //CHOMPEdit - This is run whenever a belly's contents are changed.
 		. = ..()
 
@@ -168,7 +169,7 @@ GLOBAL_LIST_INIT(digest_modes, list())
 	if(L.size_multiplier < B.shrink_grow_size)
 		L.resize(L.size_multiplier + 0.01) // Shrink by 1% per tick
 		if(L.size_multiplier >= B.shrink_grow_size) //CHOMPEdit - Adds some feedback so the pred knows their prey has stopped growing.
-			to_chat(B.owner, "<span class='notice'>You feel [L] get as big as you would like within your [lowertext(B.name)].</span>")
+			to_chat(B.owner, span_notice("You feel [L] get as big as you would like within your [lowertext(B.name)]."))
 		B.owner.update_fullness() //CHOMPEdit - This is run whenever a belly's contents are changed.
 
 /datum/digest_mode/drain/sizesteal
@@ -178,10 +179,10 @@ GLOBAL_LIST_INIT(digest_modes, list())
 	if(L.size_multiplier > B.shrink_grow_size && B.owner.size_multiplier < 2) //Grow until either pred is large or prey is small.
 		B.owner.resize(B.owner.size_multiplier + 0.01) //Grow by 1% per tick.
 		if(B.owner.size_multiplier >= 2) //CHOMPEdit - Adds some feedback so the pred knows they can't grow anymore.
-			to_chat(B.owner, "<span class='notice'>You feel you have grown as much as you can.</span>")
+			to_chat(B.owner, span_notice("You feel you have grown as much as you can."))
 		L.resize(L.size_multiplier - 0.01) //Shrink by 1% per tick
 		if(L.size_multiplier <= B.shrink_grow_size) //CHOMPEdit - Adds some feedback so the pred knows their prey has stopped shrinking.
-			to_chat(B.owner, "<span class='notice'>You feel [L] get as small as you would like within your [lowertext(B.name)].</span>")
+			to_chat(B.owner, span_notice("You feel [L] get as small as you would like within your [lowertext(B.name)]."))
 		B.owner.update_fullness() //CHOMPEdit - This is run whenever a belly's contents are changed.
 		. = ..()
 
@@ -244,8 +245,8 @@ GLOBAL_LIST_INIT(digest_modes, list())
 	for(var/E in touchable_atoms)
 		if(istype(E, /mob/observer))
 			continue
-		if(istype(E, /obj/item/weapon/storage/vore_egg)) // Don't egg other eggs.
-			var/obj/item/weapon/storage/vore_egg/EG = E
+		if(istype(E, /obj/item/storage/vore_egg)) // Don't egg other eggs.
+			var/obj/item/storage/vore_egg/EG = E
 			if(EG.egg_name != B.egg_name)
 				if(!B.egg_name)
 					EG.egg_name = null
@@ -276,8 +277,12 @@ GLOBAL_LIST_INIT(digest_modes, list())
 				B.ownegg.w_class = I.w_class
 				B.ownegg.max_storage_space = B.ownegg.w_class
 				I.forceMove(B.ownegg)
-				B.ownegg.icon_scale_x = 0.2 * B.ownegg.w_class
-				B.ownegg.icon_scale_y = 0.2 * B.ownegg.w_class
+				if(B.egg_size)
+					B.ownegg.icon_scale_x = B.egg_size
+					B.ownegg.icon_scale_y = B.egg_size
+				else
+					B.ownegg.icon_scale_x = 0.2 * B.ownegg.w_class
+					B.ownegg.icon_scale_y = 0.2 * B.ownegg.w_class
 				B.ownegg.update_transform()
 				egg_contents -= I
 				B.ownegg = null
@@ -288,11 +293,11 @@ GLOBAL_LIST_INIT(digest_modes, list())
 				I.forceMove(B.ownegg)
 			if(isliving(C))
 				var/mob/living/M = C
-				var/mob_holder_type = M.holder_type || /obj/item/weapon/holder
+				var/mob_holder_type = M.holder_type || /obj/item/holder
 				B.ownegg.w_class += M.size_multiplier * 4 //Egg size and weight scaled to match occupant.
 				if(M.size_multiplier > scale_clamp)
 					scale_clamp = M.size_multiplier
-				var/obj/item/weapon/holder/H = new mob_holder_type(B.ownegg, M)
+				var/obj/item/holder/H = new mob_holder_type(B.ownegg, M)
 				B.ownegg.max_storage_space = H.w_class
 				//B.ownegg.icon_scale_x = 0.25 * B.ownegg.w_class
 				//B.ownegg.icon_scale_y = 0.25 * B.ownegg.w_class
@@ -305,8 +310,12 @@ GLOBAL_LIST_INIT(digest_modes, list())
 		B.ownegg.calibrate_size()
 		B.ownegg.orient2hud()
 		B.ownegg.w_class = clamp(B.ownegg.w_class * 0.25, 1, 8) //A total w_class of 16 will result in a backpack sized egg.
-		B.ownegg.icon_scale_x = clamp(0.25 * B.ownegg.w_class, 0.25, scale_clamp)
-		B.ownegg.icon_scale_y = clamp(0.25 * B.ownegg.w_class, 0.25, scale_clamp)
+		if(B.egg_size)
+			B.ownegg.icon_scale_x = B.egg_size
+			B.ownegg.icon_scale_y = B.egg_size
+		else
+			B.ownegg.icon_scale_x = clamp(0.25 * B.ownegg.w_class, 0.25, scale_clamp)
+			B.ownegg.icon_scale_y = clamp(0.25 * B.ownegg.w_class, 0.25, scale_clamp)
 		B.ownegg.update_transform()
 		if(B.ownegg.w_class > 4)
 			B.ownegg.slowdown = 4 //CHOMPEdit End
@@ -406,7 +415,7 @@ GLOBAL_LIST_INIT(digest_modes, list())
 		new_percent = (L.health / L.maxHealth) * 100
 
 	var/lets_announce = FALSE
-	if(new_percent <= 99 && old_percent > 99)
+	if(new_percent <= 95 && old_percent > 95)
 		lets_announce = TRUE
 	else if(new_percent <= 75 && old_percent > 75)
 		lets_announce = TRUE
@@ -414,7 +423,7 @@ GLOBAL_LIST_INIT(digest_modes, list())
 		lets_announce = TRUE
 	else if(new_percent <= 25 && old_percent > 25)
 		lets_announce = TRUE
-	else if(new_percent <= 5 && old_percent > 5)
+	else if(new_percent <= 0 && old_percent > 0)
 		lets_announce = TRUE
 
 	if(lets_announce)
@@ -459,7 +468,7 @@ GLOBAL_LIST_INIT(digest_modes, list())
 	var/old_percent = ((old_nutrition - 100) / 500) * 100
 	var/new_percent = ((L.nutrition - 100) / 500) * 100
 	var/lets_announce = FALSE
-	if(new_percent <= 99 && old_percent > 99)
+	if(new_percent <= 95 && old_percent > 95)
 		lets_announce = TRUE
 	else if(new_percent <= 75 && old_percent > 75)
 		lets_announce = TRUE
@@ -483,7 +492,7 @@ GLOBAL_LIST_INIT(digest_modes, list())
 	var/new_percent = ((L.nutrition - 100) / 500) * 100
 
 	var/lets_announce = FALSE
-	if(new_percent <= 99 && old_percent > 99)
+	if(new_percent <= 95 && old_percent > 95)
 		lets_announce = TRUE
 	else if(new_percent <= 75 && old_percent > 75)
 		lets_announce = TRUE

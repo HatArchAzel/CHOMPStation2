@@ -6,7 +6,7 @@
 ////////////////////////////
 */
 /datum/sprite_accessory/wing
-	name = "You should not see this..."
+	name = DEVELOPER_WARNING_NAME
 	icon = 'icons/mob/human_races/sprite_accessories/wings.dmi'
 	do_colouration = 0 //Set to 1 to enable coloration using the tail color.
 
@@ -16,7 +16,7 @@
 	var/extra_overlay2 //Tertiary.
 	var/clothing_can_hide = 1 // If true, clothing with HIDETAIL hides it. If the clothing is bulky enough to hide a tail, it should also hide wings.
 	// var/show_species_tail = 1 // Just so // TODO - Seems not needed ~Leshana
-	var/desc = "You should not see this..."
+	var/desc = DEVELOPER_WARNING_NAME
 	var/ani_state // State when flapping/animated
 	var/extra_overlay_w // Flapping state for extra overlay
 	var/extra_overlay2_w
@@ -40,7 +40,7 @@
 /datum/sprite_accessory/wing/moth
 	name = "moth wings"
 	desc = ""
-	icon_state = "moth"
+	icon_state = "moth"//deprecated but leave these here to not break character slots
 
 /datum/sprite_accessory/wing/mothc
 	name = "moth wings, colorable"

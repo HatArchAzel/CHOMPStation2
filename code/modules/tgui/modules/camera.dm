@@ -68,7 +68,7 @@
 
 /datum/tgui_module/camera/Destroy()
 	if(active_camera)
-		GLOB.moved_event.unregister(active_camera, src, PROC_REF(update_active_camera_screen))
+		UnregisterSignal(active_camera, COMSIG_OBSERVER_MOVED)
 	active_camera = null
 	last_camera_turf = null
 	qdel(cam_screen)
@@ -83,7 +83,7 @@
 	var/turf/newturf = get_turf(active_camera)
 	var/area/B = newturf?.loc // No cam tracking in dorms!
 	// Show static if can't use the camera
-	if(!active_camera?.can_use() || B.block_tracking)
+	if(!active_camera?.can_use() || B.flag_check(AREA_BLOCK_TRACKING))
 		show_camera_static()
 	if(!ui)
 		var/user_ref = REF(user)
@@ -130,21 +130,22 @@
 		data["allNetworks"] |= C.network
 	return data
 
-/datum/tgui_module/camera/tgui_act(action, params)
+/datum/tgui_module/camera/tgui_act(action, params, datum/tgui/ui)
 	if(..())
 		return TRUE
 
-	if(action && !issilicon(usr))
+	if(action && !issilicon(ui.user))
 		playsound(tgui_host(), "terminal_type", 50, 1)
 
 	if(action == "switch_camera")
 		var/c_tag = params["name"]
-		var/list/cameras = get_available_cameras(usr)
+		var/list/cameras = get_available_cameras(ui.user)
 		var/obj/machinery/camera/C = cameras["[ckey(c_tag)]"]
 		if(active_camera)
-			GLOB.moved_event.unregister(active_camera, src, PROC_REF(update_active_camera_screen))
+			UnregisterSignal(active_camera, COMSIG_OBSERVER_MOVED)
 		active_camera = C
-		GLOB.moved_event.register(active_camera, src, PROC_REF(update_active_camera_screen))
+		active_camera.AddComponent(/datum/component/recursive_move)
+		RegisterSignal(active_camera, COMSIG_OBSERVER_MOVED, PROC_REF(update_active_camera_screen))
 		playsound(tgui_host(), get_sfx("terminal_type"), 25, FALSE)
 		update_active_camera_screen()
 		return TRUE
@@ -158,7 +159,7 @@
 			var/obj/machinery/camera/target
 			var/best_dist = INFINITY
 
-			var/list/possible_cameras = get_available_cameras(usr)
+			var/list/possible_cameras = get_available_cameras(ui.user)
 			for(var/obj/machinery/camera/C in get_area(T))
 				if(!possible_cameras["[ckey(C.c_tag)]"])
 					continue
@@ -169,9 +170,10 @@
 
 			if(target)
 				if(active_camera)
-					GLOB.moved_event.unregister(active_camera, src, PROC_REF(update_active_camera_screen))
+					UnregisterSignal(active_camera, COMSIG_OBSERVER_MOVED)
 				active_camera = target
-				GLOB.moved_event.register(active_camera, src, PROC_REF(update_active_camera_screen))
+				active_camera.AddComponent(/datum/component/recursive_move)
+				RegisterSignal(active_camera, COMSIG_OBSERVER_MOVED, PROC_REF(update_active_camera_screen))
 				playsound(tgui_host(), get_sfx("terminal_type"), 25, FALSE)
 				update_active_camera_screen()
 				. = TRUE
@@ -180,7 +182,7 @@
 	var/turf/newturf = get_turf(active_camera)
 	var/area/B = newturf?.loc // No cam tracking in dorms!
 	// Show static if can't use the camera
-	if(!active_camera?.can_use() || B.block_tracking)
+	if(!active_camera?.can_use() || B.flag_check(AREA_BLOCK_TRACKING))
 		show_camera_static()
 		return TRUE
 
@@ -276,7 +278,7 @@
 	// Turn off the console
 	if(length(concurrent_users) == 0 && is_living)
 		if(active_camera)
-			GLOB.moved_event.unregister(active_camera, src, PROC_REF(update_active_camera_screen))
+			UnregisterSignal(active_camera, COMSIG_OBSERVER_MOVED)
 		active_camera = null
 		playsound(tgui_host(), 'sound/machines/terminal_off.ogg', 25, FALSE)
 
